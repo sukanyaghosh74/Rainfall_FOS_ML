@@ -260,13 +260,13 @@ print(t1.to_string(index=False))
 print("\n--- Friedman Test (5-Fold R2 scores) ---")
 r2_matrix = np.column_stack([results_5fold[m]['R2'] for m in MODELS])
 stat, p_val = stats.friedmanchisquare(*[r2_matrix[:, i] for i in range(r2_matrix.shape[1])])
-print(f"  Friedman χ² = {stat:.4f}, p-value = {p_val:.4f}")
+print(f"  Friedman chi2 = {stat:.4f}, p-value = {p_val:.4f}")
 
-with open(os.path.join(RESULT_FOLDER, "Statistical_Tests.txt"), "w") as f:
+with open(os.path.join(RESULT_FOLDER, "Statistical_Tests.txt"), "w", encoding="utf-8") as f:
     f.write("FRIEDMAN TEST ON 5-FOLD R2 SCORES\n")
     f.write(f"  Models: {list(MODELS.keys())}\n")
-    f.write(f"  Friedman χ² = {stat:.6f}\n")
-    f.write(f"  p-value     = {p_val:.6f}\n\n")
+    f.write(f"  Friedman chi2 = {stat:.6f}\n")
+    f.write(f"  p-value       = {p_val:.6f}\n\n")
 
     if p_val < 0.05:
         f.write("  Result: SIGNIFICANT differences exist (p < 0.05)\n")

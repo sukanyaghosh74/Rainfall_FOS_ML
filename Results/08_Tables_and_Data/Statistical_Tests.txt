@@ -1,0 +1,13 @@
+FRIEDMAN TEST ON 5-FOLD R2 SCORES
+  Models: ['ANN (MLP)', 'CatBoost', 'LightGBM']
+  Friedman chi2 = 8.400000
+  p-value       = 0.014996
+
+  Result: SIGNIFICANT differences exist (p < 0.05)
+  Proceeding with Nemenyi post-hoc test...
+
+NEMENYI POST-HOC PAIRWISE p-VALUES:
+           ANN (MLP)  CatBoost  LightGBM
+ANN (MLP)   1.000000  0.012310  0.139405
+CatBoost    0.012310  1.000000  0.609411
+LightGBM    0.139405  0.609411  1.000000

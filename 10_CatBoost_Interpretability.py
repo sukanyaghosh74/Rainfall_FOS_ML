@@ -87,7 +87,7 @@ model.fit(X_train, y_train, eval_set=(X_test, y_test))
 preds  = model.predict(X_test)
 R2     = r2_score(y_test, preds)
 RMSE   = np.sqrt(mean_squared_error(y_test, preds))
-print(f"CatBoost → R²={R2:.5f}, RMSE={RMSE:.5f}")
+print(f"CatBoost -> R2={R2:.5f}, RMSE={RMSE:.5f}")
 
 # ============================================================
 # SHAP ANALYSIS
@@ -164,8 +164,10 @@ for feat in top_features:
 
 print("\nCalculating Permutation Feature Importance...")
 
-# Wrap model for sklearn's permutation_importance
+# Wrap model for sklearn's permutation_importance (must implement fit)
 class CatBoostWrapper:
+    def fit(self, X, y):
+        return self  # already trained externally
     def predict(self, X):
         return model.predict(X)
 
@@ -211,43 +213,53 @@ perm_df.to_csv(os.path.join(RESULT_FOLDER, "Permutation_Importance.csv"), index=
 # ============================================================
 # PDP + ICE PLOTS
 # ============================================================
+# PDP + ICE PLOTS — Manual Implementation (avoids sklearn wrapper issues)
+# ============================================================
 
 print("\nGenerating PDP + ICE Plots...")
 
-# Re-wrap model for sklearn PartialDependenceDisplay
-from sklearn.base import BaseEstimator, RegressorMixin
+def compute_pdp_ice(model, X, feat_idx, n_grid=50):
+    """
+    Manually compute PDP and ICE curves for a given feature.
+    Returns: grid_vals, pdp_vals, ice_matrix (n_samples x n_grid)
+    """
+    feat_min = X[:, feat_idx].min()
+    feat_max = X[:, feat_idx].max()
+    grid_vals = np.linspace(feat_min, feat_max, n_grid)
 
-class SKLearnCatBoost(BaseEstimator, RegressorMixin):
-    def fit(self, X, y):
-        return self
-    def predict(self, X):
-        return model.predict(X)
+    ice_matrix = np.zeros((X.shape[0], n_grid))
+    for j, val in enumerate(grid_vals):
+        X_mod = X.copy()
+        X_mod[:, feat_idx] = val
+        ice_matrix[:, j] = model.predict(X_mod)
 
-sk_model = SKLearnCatBoost()
+    pdp_vals = ice_matrix.mean(axis=0)
+    return grid_vals, pdp_vals, ice_matrix
 
 for feat in top_features:
     feat_idx = feature_names.index(feat)
-    try:
-        fig, ax = plt.subplots(figsize=(8, 5))
-        disp = PartialDependenceDisplay.from_estimator(
-            sk_model, X_test, [feat_idx],
-            feature_names=feature_names,
-            kind="both",   # PDP + ICE
-            ax=ax,
-            ice_lines_kw={"color": "steelblue", "alpha": 0.08, "linewidth": 0.8},
-            pd_line_kw={"color": "red", "linewidth": 2.5, "label": "PDP"},
-        )
-        ax.set_title(f"PDP + ICE — {feat}", fontsize=12, fontweight='bold', pad=10)
-        ax.set_xlabel(feat, fontsize=11)
-        ax.set_ylabel("Predicted FOS", fontsize=11)
-        ax.grid(True, linestyle='--', alpha=0.4)
-        ax.spines[['top', 'right']].set_visible(False)
-        plt.tight_layout()
-        safe = feat.replace(" ", "_").replace("(", "").replace(")", "").replace("/", "_")
-        plt.savefig(os.path.join(RESULT_FOLDER, f"PDP_ICE_{safe}.png"), dpi=300, bbox_inches='tight')
-        plt.close()
-        print(f"  ✓ PDP+ICE saved: {feat}")
-    except Exception as e:
-        print(f"  ✗ PDP+ICE failed for {feat}: {e}")
+    grid_vals, pdp_vals, ice_matrix = compute_pdp_ice(model, X_test, feat_idx)
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    # ICE lines
+    for i in range(ice_matrix.shape[0]):
+        ax.plot(grid_vals, ice_matrix[i], color='steelblue', alpha=0.06, linewidth=0.8)
+
+    # PDP line
+    ax.plot(grid_vals, pdp_vals, color='red', linewidth=2.5, label='PDP (mean)', zorder=5)
+
+    ax.set_xlabel(f"{feat} (normalised 0–1)", fontsize=11)
+    ax.set_ylabel("Predicted FOS", fontsize=11)
+    ax.set_title(f"PDP + ICE — {feat}", fontsize=12, fontweight='bold', pad=10)
+    ax.legend(fontsize=10)
+    ax.grid(True, linestyle='--', alpha=0.4)
+    ax.spines[['top', 'right']].set_visible(False)
+    plt.tight_layout()
+
+    safe = feat.replace(" ", "_").replace("(", "").replace(")", "").replace("/", "_")
+    plt.savefig(os.path.join(RESULT_FOLDER, f"PDP_ICE_{safe}.png"), dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"  [OK] PDP+ICE saved: {feat}")
 
 print(f"\nAll Phase 2 results saved in: {RESULT_FOLDER}")

@@ -1,0 +1,61 @@
+PHYSICAL CONSISTENCY REPORT
+============================================================
+
+Feature: VBP (%)
+  Spearman rho = -0.2800  (p=0.0048)
+  Trend direction: NEGATIVE ↓
+
+Feature: Matrix Type
+  Spearman rho = 0.9186  (p=0.0000)
+  Trend direction: POSITIVE ↑
+
+Feature: Time (hr)
+  Spearman rho = -0.6425  (p=0.0000)
+  Trend direction: NEGATIVE ↓
+
+Feature: Rainfall Intensity (cm/hr)
+  Spearman rho = 0.2830  (p=0.0043)
+  Trend direction: POSITIVE ↑
+
+Feature: Displacement (cm)
+  Spearman rho = 0.5628  (p=0.0000)
+  Trend direction: POSITIVE ↑
+
+Feature: PWP (N/cm2)
+  Spearman rho = 0.8258  (p=0.0000)
+  Trend direction: POSITIVE ↑
+
+Feature: Seepage (cm/hour)
+  Spearman rho = -0.9705  (p=0.0000)
+  Trend direction: NEGATIVE ↓
+
+
+GEOTECHNICAL INTERPRETATION
+============================================================
+
+1. RAINFALL INTENSITY & TIME:
+   Expected: Increasing rainfall intensity and duration should
+   DECREASE FOS (more pore water pressure, reduced shear strength).
+   A negative Spearman correlation for these features is physically
+   consistent with slope stability mechanics (Terzaghi, Bishop).
+
+2. VBP (Vegetation Base Percentage):
+   Expected: Higher VBP should INCREASE FOS — vegetation roots
+   provide mechanical reinforcement (root cohesion) and promote
+   drainage (reduced pore pressures). A positive correlation is
+   physically meaningful.
+
+3. MATRIX TYPE:
+   Expected: The ordering of matrix types (e.g., sandy vs. clay-rich)
+   should reflect their known shear strength and hydraulic conductivity
+   properties. Sandy loam typically drains faster → higher FOS for
+   equivalent rainfall; clay-rich matrices retain water → lower FOS.
+
+4. DISPLACEMENT & PWP:
+   Expected: Higher displacement and pore water pressure (PWP) are
+   indicators of reduced slope stability, hence a negative correlation
+   with FOS is physically consistent.
+
+NOTE: Discrepancies from expected trends may indicate data-driven
+nuances (e.g., interaction effects captured by the model) rather
+than physical inconsistencies.

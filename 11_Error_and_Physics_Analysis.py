@@ -87,7 +87,7 @@ residuals = y_test - preds
 
 R2   = r2_score(y_test, preds)
 RMSE = np.sqrt(mean_squared_error(y_test, preds))
-print(f"CatBoost → R²={R2:.5f}, RMSE={RMSE:.5f}")
+print(f"CatBoost -> R2={R2:.5f}, RMSE={RMSE:.5f}")
 
 # Build a dataframe with test results including metadata
 test_df = pd.DataFrame({
@@ -323,7 +323,7 @@ than physical inconsistencies.
 """)
 
 report_path = os.path.join(RESULT_FOLDER, "Physical_Consistency_Report.txt")
-with open(report_path, "w") as f:
+with open(report_path, "w", encoding="utf-8") as f:
     f.writelines(report_lines)
 
 print(f"\n  Physical Consistency Report saved: {report_path}")

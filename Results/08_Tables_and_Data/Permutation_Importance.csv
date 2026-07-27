@@ -1,0 +1,8 @@
+Feature,Mean_Decrease_R2,Std
+Matrix Type,0.5112,0.07518
+Seepage (cm/hour),0.3128,0.04622
+PWP (N/cm2),0.29185,0.0466
+Time (hr),0.12274,0.02327
+Displacement (cm),0.04172,0.00899
+VBP (%),0.02302,0.00424
+Rainfall Intensity (cm/hr),0.01592,0.00437
